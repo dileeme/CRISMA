@@ -39,6 +39,7 @@ export function parsePdb(text: string): Atom[] {
 
     atoms.push({
       serial: Number.isNaN(serial) ? atoms.length + 1 : serial,
+      atomName,
       element: normalizeElement(element),
       x,
       y,

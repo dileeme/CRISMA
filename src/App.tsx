@@ -1,9 +1,11 @@
+import { useState } from 'react';
 import PdbLoader from './components/PdbLoader';
-import MoleculeViewer from './components/MoleculeViewer';
+import MoleculeViewer, { type RenderMode } from './components/MoleculeViewer';
 import { useStructure } from './hooks/useStructure';
 
 function App() {
   const { atoms, status, error, load } = useStructure();
+  const [renderMode, setRenderMode] = useState<RenderMode>('atoms');
 
   return (
     <div className="w-screen h-screen flex flex-col bg-neutral-950">
@@ -15,8 +17,15 @@ function App() {
           </div>
         )}
         {status === 'success' && (
-          <div className="absolute top-2 left-2 z-10 px-3 py-2 rounded bg-neutral-900/80 text-neutral-200 text-sm">
-            {atoms.length} atoms
+          <div className="absolute top-2 left-2 z-10 flex items-center gap-2 px-3 py-2 rounded bg-neutral-900/80 text-neutral-200 text-sm">
+            <span>{atoms.length} atoms</span>
+            <button
+              type="button"
+              onClick={() => setRenderMode((m) => (m === 'atoms' ? 'surface' : 'atoms'))}
+              className="px-2 py-0.5 rounded bg-neutral-700 hover:bg-neutral-600 text-xs"
+            >
+              {renderMode === 'atoms' ? 'Show electrostatic surface' : 'Show atoms'}
+            </button>
           </div>
         )}
         {status === 'idle' && (
@@ -24,7 +33,7 @@ function App() {
             Enter a PDB ID and hit Load
           </div>
         )}
-        <MoleculeViewer atoms={atoms} />
+        <MoleculeViewer atoms={atoms} renderMode={renderMode} />
       </div>
     </div>
   );

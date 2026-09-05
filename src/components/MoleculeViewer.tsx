@@ -4,6 +4,7 @@ import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 import type { Atom } from '../types/atom';
 import { getElementColor } from '../lib/cpkColors';
+import SurfaceMesh from './SurfaceMesh';
 
 const ANGSTROM_SCALE = 0.3;
 const SPHERE_RADIUS = 0.4;
@@ -40,11 +41,14 @@ function AtomGroup({ atoms, color, center }: AtomGroupProps) {
   );
 }
 
+export type RenderMode = 'atoms' | 'surface';
+
 interface MoleculeViewerProps {
   atoms: Atom[];
+  renderMode?: RenderMode;
 }
 
-export default function MoleculeViewer({ atoms }: MoleculeViewerProps) {
+export default function MoleculeViewer({ atoms, renderMode = 'atoms' }: MoleculeViewerProps) {
   const { groups, center } = useMemo(() => {
     const byElement = new Map<string, Atom[]>();
     const sum = new THREE.Vector3();
@@ -68,9 +72,11 @@ export default function MoleculeViewer({ atoms }: MoleculeViewerProps) {
       <ambientLight intensity={0.6} />
       <directionalLight position={[10, 10, 10]} intensity={1} />
       <directionalLight position={[-10, -10, -10]} intensity={0.3} />
-      {groups.map(([element, groupAtoms]) => (
-        <AtomGroup key={element} atoms={groupAtoms} color={getElementColor(element)} center={center} />
-      ))}
+      {renderMode === 'atoms' &&
+        groups.map(([element, groupAtoms]) => (
+          <AtomGroup key={element} atoms={groupAtoms} color={getElementColor(element)} center={center} />
+        ))}
+      {renderMode === 'surface' && <SurfaceMesh atoms={atoms} angstromScale={ANGSTROM_SCALE} />}
       <OrbitControls makeDefault />
     </Canvas>
   );
