@@ -1,32 +1,46 @@
-# React + TypeScript + Vite
+# CRISMA
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+CRISMA is a 3D molecular visualization platform for drug design and delivery,
+built with React, TypeScript, and Three.js. It lets users load a protein
+structure by PDB ID and observe it at the molecular level directly in the
+browser.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **Structure loading** — fetches a structure from the RCSB PDB by ID and
+  parses its `ATOM`/`HETATM` records (`src/lib/pdbFetch.ts`, `src/lib/pdbParse.ts`).
+- **3D molecular viewer** — atoms rendered as CPK-colored instanced spheres in
+  a Three.js scene (via `@react-three/fiber`), with orbit camera controls
+  (`src/components/MoleculeViewer.tsx`).
+- **Electrostatic potential surface mapping** — an approximate Coulombic
+  potential is computed per atom from a partial-charge lookup table and
+  rendered as a marching-cubes surface, colored on a red (negative) to blue
+  (positive) gradient. Toggle between the atom view and the surface view from
+  the viewer toolbar (`src/lib/electrostatics.ts`, `src/components/SurfaceMesh.tsx`).
 
-## React Compiler
+More features (docking score overlays, molecular dynamics trajectory
+playback) are in active development.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech stack
 
-## Expanding the Oxlint configuration
+- [React](https://react.dev/) 19 + TypeScript
+- [Vite](https://vite.dev/) for dev/build tooling
+- [Three.js](https://threejs.org/) via [`@react-three/fiber`](https://github.com/pmndrs/react-three-fiber) and [`@react-three/drei`](https://github.com/pmndrs/drei)
+- [Tailwind CSS](https://tailwindcss.com/) v4 for UI styling
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Getting started
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+npm install
+npm run dev
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+Then open the printed local URL, enter a PDB ID (e.g. `1CRN`), and click
+Load.
+
+## Scripts
+
+- `npm run dev` — start the Vite dev server
+- `npm run build` — type-check and build for production
+- `npm run lint` — run Oxlint
+- `npm run preview` — preview the production build locally
