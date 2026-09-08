@@ -1,15 +1,23 @@
 import { useState } from 'react';
 import PdbLoader from './components/PdbLoader';
 import MoleculeViewer, { type RenderMode } from './components/MoleculeViewer';
+import EntryMetadata from './components/EntryMetadata';
 import { useStructure } from './hooks/useStructure';
+import { useEntryMetadata } from './hooks/useEntryMetadata';
 
 function App() {
   const { atoms, status, error, load } = useStructure();
+  const { metadata, status: metadataStatus, error: metadataError, load: loadMetadata } = useEntryMetadata();
   const [renderMode, setRenderMode] = useState<RenderMode>('atoms');
+
+  const handleLoad = (pdbId: string) => {
+    load(pdbId);
+    loadMetadata(pdbId);
+  };
 
   return (
     <div className="w-screen h-screen flex flex-col bg-neutral-950">
-      <PdbLoader onLoad={load} loading={status === 'loading'} />
+      <PdbLoader onLoad={handleLoad} loading={status === 'loading'} />
       <div className="relative flex-1">
         {status === 'error' && (
           <div className="absolute top-2 left-2 z-10 px-3 py-2 rounded bg-red-900/80 text-red-100 text-sm max-w-md">
@@ -34,6 +42,19 @@ function App() {
           </div>
         )}
         <MoleculeViewer atoms={atoms} renderMode={renderMode} />
+        {metadataStatus === 'success' && metadata && (
+          <div className="absolute top-2 right-2 z-10">
+            <EntryMetadata metadata={metadata} />
+          </div>
+        )}
+        {metadataStatus === 'error' && metadataError && (
+          <div className="absolute top-2 right-2 z-10 px-3 py-2 rounded bg-red-900/80 text-red-100 text-xs max-w-xs">
+            {metadataError}
+          </div>
+        )}
+      </div>
+      <div className="py-3 text-center text-base text-neutral-400 bg-neutral-950 border-t border-neutral-800">
+        Powered by Dilen Shankar 2026
       </div>
     </div>
   );
